@@ -1,0 +1,44 @@
+OpCapability MeshShadingEXT
+OpCapability Shader
+OpExtension "SPV_EXT_mesh_shader"
+OpMemoryModel Logical GLSL450
+OpEntryPoint MeshEXT %main "main" %pc
+OpExecutionMode %main OutputTrianglesEXT
+OpExecutionMode %main OutputVertices 128
+OpExecutionMode %main OutputPrimitivesEXT 128
+OpExecutionMode %main LocalSize 128 1 1
+OpDecorate %arr ArrayStride 4
+OpMemberDecorate %block 0 Offset 0
+OpDecorate %block Block
+%uint = OpTypeInt 32 0
+%bool = OpTypeBool
+%uint_0 = OpConstant %uint 0
+%uint_15 = OpConstant %uint 15
+%uint_1 = OpConstant %uint 1
+%true = OpConstantTrue %bool
+%uint_32 = OpConstant %uint 32
+%exec = OpConstant %uint 2
+%mem = OpConstant %uint 2
+%sem = OpConstant %uint 264
+%arr = OpTypeArray %uint %uint_32
+%block = OpTypeStruct %arr
+%ptr_block = OpTypePointer PushConstant %block
+%pc = OpVariable %ptr_block PushConstant
+%ptr_uint = OpTypePointer PushConstant %uint
+%void = OpTypeVoid
+%fn = OpTypeFunction %void
+%main = OpFunction %void None %fn
+%m_pre = OpLabel
+%m_chain = OpAccessChain %ptr_uint %pc %uint_0 %uint_15
+%m_value = OpLoad %uint %m_chain
+%m_cond = OpINotEqual %bool %m_value %uint_0
+OpSelectionMerge %m_merge None
+OpBranchConditional %m_cond %m_skip %m_do
+%m_do = OpLabel
+OpControlBarrier %exec %mem %sem
+OpBranch %m_merge
+%m_skip = OpLabel
+OpBranch %m_merge
+%m_merge = OpLabel
+OpReturn
+OpFunctionEnd
